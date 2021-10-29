@@ -26,10 +26,16 @@ def main(log1_path: Path, log2_path: Path, output: Path, verbose: bool):
         while line1 or line2:
             if not line1 and line2:
                 out.writelines(line2 + NEWLINE)
+                line2 = log2.readline()
+                if verbose:
+                    progressbar.update(1)
                 continue
 
             if line1 and not line2:
                 out.writelines(line1 + NEWLINE)
+                line1 = log1.readline()
+                if verbose:
+                    progressbar.update(1)
                 continue
 
             row1 = json.loads(line1)
