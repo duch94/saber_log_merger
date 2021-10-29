@@ -23,21 +23,7 @@ def main(log1_path: Path, log2_path: Path, output: Path, verbose: bool):
             progressbar = make_progressbar(log1, log2)
         line1 = log1.readline()
         line2 = log2.readline()
-        while line1 or line2:
-            if not line1 and line2:
-                out.writelines(line2 + NEWLINE)
-                line2 = log2.readline()
-                if verbose:
-                    progressbar.update(1)
-                continue
-
-            if line1 and not line2:
-                out.writelines(line1 + NEWLINE)
-                line1 = log1.readline()
-                if verbose:
-                    progressbar.update(1)
-                continue
-
+        while line1 and line2:
             row1 = json.loads(line1)
             row2 = json.loads(line2)
             if row1["timestamp"] < row2["timestamp"]:
@@ -48,6 +34,19 @@ def main(log1_path: Path, log2_path: Path, output: Path, verbose: bool):
                 line2 = log2.readline()
             if verbose:
                 progressbar.update(1)
+
+        while not line1 and line2:
+            out.writelines(line2 + NEWLINE)
+            line2 = log2.readline()
+            if verbose:
+                progressbar.update(1)
+
+        while line1 and not line2:
+            out.writelines(line1 + NEWLINE)
+            line1 = log1.readline()
+            if verbose:
+                progressbar.update(1)
+
     logger.info("Log files have been merged")
 
 
